@@ -14,7 +14,7 @@
     <tr>
         <td><?= $fighter->id ?></td>
         <td>
-            <?= $fighter->name ?>
+            <?= $this->Html->link($fighter->name, ['action' => 'viewFighter', $fighter->id]) ?>
         </td>
         <td>
             <?= $fighter->xp ?>
