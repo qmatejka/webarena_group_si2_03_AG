@@ -25,7 +25,7 @@ use Cake\Event\Event;
  *
  * @link http://book.cakephp.org/3.0/en/controllers.html#the-app-controller
  */
-class AppController extends Controller
+class Webarena_group_si2_03_agController extends Controller
 {
 
     /**
@@ -45,6 +45,16 @@ class AppController extends Controller
         $this->loadComponent('Flash');
     }
 
+    public function index()
+    {
+        $this->set('myname', "Quentin Matejka");
+    }
+    
+    public function Arenas()
+    {
+        $this->set('myname', "Arenas");
+    }
+    
     /**
      * Before render callback.
      *
@@ -58,5 +68,16 @@ class AppController extends Controller
         ) {
             $this->set('_serialize', true);
         }
+    }
+    
+    public function fighters()
+    {       
+        $this->loadModel('Fighters');
+        $this->set('fighters', $this->Fighters->find('all'));
+    }
+    
+    public function view($id = null){
+        $fighter = $this->Fighters->get($id);
+        $this->set(compact('fighter'));
     }
 }
