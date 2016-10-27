@@ -1,24 +1,19 @@
 <?php
 namespace App\Controller;
-use Cake\Controller\Controller;
+
+use Cake\ORM\TableRegistry;
 
 /**
 * Personal Controller
 * User personal interface
 *
 */
-class ArenasController  extends Controller
+class ArenasController  extends AppController
 {
 public function index()
 	{
 		$this->set('myname', "Myrvete Hatoum");
-		//$this->loadModel('Fighters');
-		//$figterlist=$this->Fighters->find('all');
-		//pr($figterlist->toArray());
-		$this->loadModel('Fighters');
-		$message = $this->Fighters->test();
-		//var_dump($message);
-		$this->set('var', $message);
+
 	}
 
 	public function login()
@@ -119,7 +114,6 @@ public function fighters()
         $session->write([
                             'user.fighters.ids' => $array
                         ]);
-        print_r($array);
     //}
     
 }
@@ -145,5 +139,51 @@ public function viewFighter($id = null){
             break;
         }
     }   
+}
+
+public function levelupFighter($id = null){ 
+    $fightersTable = TableRegistry::get('Fighters');
+    $fighter = $fightersTable->get($id);
+    $totalAmountOfExp=($fighter->level + 1)*12;
+    $currentAmountOfExp=$fighter->xp;
+        
+    if($currentAmountOfExp>=$totalAmountOfExp){
+        $fighter->level++;
+        $fighter->current_health++;
+        $fighter->skill_health++;
+        $fighter->xp = $currentAmountOfExp - $totalAmountOfExp;
+        if($fighter->level % 3 == 0){
+            $fighter->skill_strength++;
+        }
+        if($fighter->level % 5 == 0){
+            $fighter->skill_sight++;
+        }
+        
+        if ($fightersTable->save($fighter)) {
+            $this->Flash->success(__('Votre champion devient plus fort!'));
+            return $this->redirect(['action' => 'viewFighter', $id]);
+        }
+    }
+    $this->Flash->error(__('Impossible de mettre à jour votre champion.'));   
+    $this->set('fighter', $fighter);
+    return $this->redirect(['action' => 'viewFighter', $id]);
+}
+
+public function addFighter()
+{
+    $this->loadModel('Fighters');
+    
+    $this->set('player_id', $this->request->session()->read('Players.id'));
+    
+    $fighter = $this->Fighters->newEntity();
+    if ($this->request->is('post')) {
+        $fighter = $this->Fighters->patchEntity($fighter, $this->request->data);
+        if ($this->Fighters->save($fighter)) {
+            $this->Flash->success(__('Votre champion a été créé.'));
+            return $this->redirect(['action' => 'fighters']);
+        }
+        $this->Flash->error(__('Impossible de créer votre champion.'));
+    }
+    $this->set('fighter', $fighter);
 }
 }
