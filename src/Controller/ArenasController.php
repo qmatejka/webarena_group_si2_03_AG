@@ -104,13 +104,46 @@ public function index()
 public function fighters()
 {
     $this->loadModel('Fighters');
-    $player_id = $this->request->session()->read('Players.id');
-    $this->set('fighters', $this->Fighters->find('all')->where(['Fighters.player_id' => $player_id]));
+    $session = $this->request->session();
+    $player_id = $session->read('Players.id');
+    
+    $query = $this->Fighters->find('all')->where(['Fighters.player_id' => $player_id]);
+    $this->set('fighters', $query);
+    
+    
+    //if(isset($session->read('user.fighters.ids'))){
+        $array = array();
+        foreach($query as $row){
+            $array[] = $row->id;
+        }
+        $session->write([
+                            'user.fighters.ids' => $array
+                        ]);
+        print_r($array);
+    //}
+    
 }
 
 public function viewFighter($id = null){
     $this->loadModel('Fighters');
     $fighter = $this->Fighters->get($id);
     $this->set(compact('fighter'));
+    
+    $fighters_ids = $this->request->session()->read('user.fighters.ids');
+    for ($i = 0; $i < count($fighters_ids); $i++) {
+        if($fighters_ids[$i] == $id){
+            if($i == 0){
+                $this->set('previous', $fighters_ids[count($fighters_ids)-1]);
+                $this->set('next', $fighters_ids[$i+1]);
+            }else if($i == count($fighters_ids)-1){
+                $this->set('previous', $fighters_ids[$i-1]);
+                $this->set('next', $fighters_ids[0]);
+            }else{
+                $this->set('previous', $fighters_ids[$i-1]);
+                $this->set('next', $fighters_ids[$i+1]);
+            }
+            break;
+        }
+    }   
 }
 }

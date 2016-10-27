@@ -16,8 +16,8 @@
         <article id="position">
             <h2>POSITION</h2>
             <ul>
-                <li>X = 2</li>
-                <li>Y = 3</li>
+                <li>X = <?= h($fighter->coordinate_x) ?></li>
+                <li>Y = <?= h($fighter->coordinate_y) ?></li>
             </ul>
         </article>
 
@@ -40,9 +40,17 @@
         <p><?= h($fighter->name) ?></p>
         <progress id="experience-bar" max="<?= (h($fighter->level)+1)*12 ?>" value="<?= h($fighter->xp) ?>"></progress>
         <p id="exp"><?= h($fighter->xp) ?> / <?= (h($fighter->level)+1)*12 ?></p>
-        <?= $this->Html->image('keyboard-left-arrow-button.png', ['alt' => 'Previous','class' => 'arrow']) ?>
+        <?= $this->Html->image('keyboard-left-arrow-button.png', [
+            'alt' => 'Previous',
+            'class' => 'arrow',
+            'url' => ['controller' => 'arenas', 'action' => 'viewFighter', $previous]
+            ]) ?>
         <a id="play" onclick="div_show()">PLAY</a>
-        <?= $this->Html->image('keyboard-right-arrow-button.png', ['alt' => 'Next','class' => 'arrow']) ?>
+        <?= $this->Html->image('keyboard-right-arrow-button.png', [
+            'alt' => 'Next',
+            'class' => 'arrow',
+            'url' => ['controller' => 'arenas', 'action' => 'viewFighter', $next]
+            ]) ?>
     </section>
 
 </body>
